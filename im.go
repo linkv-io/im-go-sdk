@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"crypto/md5"
 	"crypto/rand"
+	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	"math/big"
 	"net/url"
 	"sort"
@@ -31,13 +33,37 @@ var (
 	waitTime = time.Millisecond * 300
 )
 
-func NewIM(appKey, appSecret string) *im {
-	return &im{appKey, appSecret}
+func NewIM(secret string) *im {
+	dst, err := base64.RawStdEncoding.DecodeString(secret)
+	if err != nil {
+		panic("secret error")
+	}
+	var ss struct {
+		AppKey      string `json:"app_key"`
+		AppSecret   string `json:"app_secret"`
+		IMAppID     string `json:"im_app_id"`
+		IMAppKey    string `json:"im_app_key"`
+		IMAppSecret string `json:"im_app_secret"`
+		IMHost      string `json:"im_host"`
+	}
+	json.Unmarshal(dst, &ss)
+	return &im{
+		ss.AppKey,
+		ss.AppSecret,
+		ss.IMAppID,
+		ss.IMAppKey,
+		ss.IMAppSecret,
+		ss.IMHost,
+	}
 }
 
 type im struct {
-	appKey    string
-	appSecret string
+	appKey      string
+	appSecret   string
+	imAppID     string
+	imAppKey    string
+	imAppSecret string
+	imHost      string
 }
 
 func genUniqueIDString(appKey string) string {
@@ -97,4 +123,31 @@ func encode(v url.Values) string {
 		buf.WriteString(vs[0])
 	}
 	return buf.String()
+}
+
+func randomString(nLen int) string {
+	var container string
+	var str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+	b := bytes.NewBufferString(str)
+	length := b.Len()
+	bigInt := big.NewInt(int64(length))
+	for i := 0; i < nLen; i++ {
+		randomInt, _ := rand.Int(rand.Reader, bigInt)
+		container += string(str[randomInt.Int64()])
+	}
+	return container
+}
+
+func genGUID() string {
+	return randomString(9) + "-" + randomString(4) + "-" + randomString(4) + "-" + randomString(12)
+}
+
+func getTimestampS() string {
+	t := time.Now()
+	return strconv.FormatInt(t.Unix(), 10)
+}
+
+func getTimestampMS() string {
+	t := time.Now()
+	return strconv.FormatInt(t.Unix()*1000+t.UnixNano(), 10)
 }

@@ -6,9 +6,9 @@ import (
 )
 
 func main() {
-	appKey := "xxxxx"
-	appSecret := "xxxx"
-	im := imsdk.NewIM(appKey, appSecret)
+	secret := ""
+	im := imsdk.NewIM(secret)
+
 	thirdUID := "test-go-tob"
 	aID := "test"
 	// 进行帐号绑定
@@ -19,4 +19,12 @@ func main() {
 		panic("im.GetTokenByThirdUID(" + err.Error() + ")")
 	}
 	fmt.Printf("token:%v\topenID:%v\n", imToken, imOpenID)
+
+	toUID := "1100"
+	objectName := "RC:textMsg"
+	content := "测试单聊"
+	fmt.Println(im.PushConverseData(thirdUID, toUID, objectName, content, "", "", "", "", "", ""))
+
+	content = "测试 事件"
+	fmt.Println(im.PushEventData(thirdUID, toUID, objectName, content, "", "", "", ""))
 }
