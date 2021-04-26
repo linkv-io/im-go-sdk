@@ -44,8 +44,7 @@ func (o *im) GetTokenByThirdUID(thirdUID, aID, userName string, sex SexType, por
 
 	params.Add("sign", genSign(params, o.appSecret))
 
-	//uri := o.GetConfig().URL + "/open/v0/thGetToken"
-	uri := "http://127.0.0.1" + "/open/v0/thGetToken"
+	uri := "http://thr.linkv.sg/open/v0/thGetToken"
 
 	var errResult error
 
