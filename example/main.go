@@ -7,7 +7,10 @@ import (
 
 func main() {
 	secret := ""
-	im := imsdk.NewIM(secret)
+	im, err := imsdk.NewIM(secret)
+	if err != nil {
+		panic(fmt.Errorf("imsdk.NewIM(secret) error(%v)", err))
+	}
 
 	thirdUID := "test-go-tob"
 	aID := "test"

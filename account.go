@@ -87,7 +87,7 @@ func (o *im) GetTokenByThirdUID(thirdUID, aID, userName string, sex SexType, por
 			time.Sleep(waitTime)
 			continue
 		}
-		return "", "", fmt.Errorf("message(%v)", result.Msg)
+		return "", "", fmt.Errorf("message(%s)", jsonData)
 	}
 	return "", "", errResult
 }

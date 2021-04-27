@@ -33,7 +33,7 @@ var (
 	waitTime = time.Millisecond * 300
 )
 
-func NewIM(secret string) *im {
+func NewIM(secret string) (*im, error) {
 	dst, err := base64.RawStdEncoding.DecodeString(secret)
 	if err != nil {
 		panic("secret error")
@@ -46,7 +46,9 @@ func NewIM(secret string) *im {
 		IMAppSecret string `json:"im_app_secret"`
 		IMHost      string `json:"im_host"`
 	}
-	json.Unmarshal(dst, &ss)
+	if err := json.Unmarshal(dst, &ss); err != nil {
+		return nil, err
+	}
 	return &im{
 		ss.AppKey,
 		ss.AppSecret,
@@ -54,7 +56,7 @@ func NewIM(secret string) *im {
 		ss.IMAppKey,
 		ss.IMAppSecret,
 		ss.IMHost,
-	}
+	}, nil
 }
 
 type im struct {
